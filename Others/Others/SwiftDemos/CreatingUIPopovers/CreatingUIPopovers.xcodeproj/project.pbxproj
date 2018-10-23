@@ -1,0 +1,301 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F4D4ABE71CF8849200715C41 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4ABE61CF8849200715C41 /* AppDelegate.swift */; };
+		F4D4ABE91CF8849200715C41 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4ABE81CF8849200715C41 /* ViewController.swift */; };
+		F4D4ABEC1CF8849200715C41 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F4D4ABEA1CF8849200715C41 /* Main.storyboard */; };
+		F4D4ABEE1CF8849200715C41 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4D4ABED1CF8849200715C41 /* Assets.xcassets */; };
+		F4D4ABF11CF8849200715C41 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F4D4ABEF1CF8849200715C41 /* LaunchScreen.storyboard */; };
+		F4D4ABF91CF8854800715C41 /* PopoverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4ABF81CF8854800715C41 /* PopoverController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F4D4ABE31CF8849200715C41 /* CreatingUIPopovers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CreatingUIPopovers.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4D4ABE61CF8849200715C41 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F4D4ABE81CF8849200715C41 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F4D4ABEB1CF8849200715C41 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F4D4ABED1CF8849200715C41 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F4D4ABF01CF8849200715C41 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F4D4ABF21CF8849200715C41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F4D4ABF81CF8854800715C41 /* PopoverController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopoverController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F4D4ABE01CF8849200715C41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F4D4ABDA1CF8849200715C41 = {
+			isa = PBXGroup;
+			children = (
+				F4D4ABE51CF8849200715C41 /* CreatingUIPopovers */,
+				F4D4ABE41CF8849200715C41 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F4D4ABE41CF8849200715C41 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4D4ABE31CF8849200715C41 /* CreatingUIPopovers.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4D4ABE51CF8849200715C41 /* CreatingUIPopovers */ = {
+			isa = PBXGroup;
+			children = (
+				F4D4ABE61CF8849200715C41 /* AppDelegate.swift */,
+				F4D4ABE81CF8849200715C41 /* ViewController.swift */,
+				F4D4ABF81CF8854800715C41 /* PopoverController.swift */,
+				F4D4ABEA1CF8849200715C41 /* Main.storyboard */,
+				F4D4ABED1CF8849200715C41 /* Assets.xcassets */,
+				F4D4ABEF1CF8849200715C41 /* LaunchScreen.storyboard */,
+				F4D4ABF21CF8849200715C41 /* Info.plist */,
+			);
+			path = CreatingUIPopovers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F4D4ABE21CF8849200715C41 /* CreatingUIPopovers */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4D4ABF51CF8849200715C41 /* Build configuration list for PBXNativeTarget "CreatingUIPopovers" */;
+			buildPhases = (
+				F4D4ABDF1CF8849200715C41 /* Sources */,
+				F4D4ABE01CF8849200715C41 /* Frameworks */,
+				F4D4ABE11CF8849200715C41 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CreatingUIPopovers;
+			productName = CreatingUIPopovers;
+			productReference = F4D4ABE31CF8849200715C41 /* CreatingUIPopovers.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4D4ABDB1CF8849200715C41 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = Arun;
+				TargetAttributes = {
+					F4D4ABE21CF8849200715C41 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+				};
+			};
+			buildConfigurationList = F4D4ABDE1CF8849200715C41 /* Build configuration list for PBXProject "CreatingUIPopovers" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F4D4ABDA1CF8849200715C41;
+			productRefGroup = F4D4ABE41CF8849200715C41 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F4D4ABE21CF8849200715C41 /* CreatingUIPopovers */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F4D4ABE11CF8849200715C41 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D4ABF11CF8849200715C41 /* LaunchScreen.storyboard in Resources */,
+				F4D4ABEE1CF8849200715C41 /* Assets.xcassets in Resources */,
+				F4D4ABEC1CF8849200715C41 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F4D4ABDF1CF8849200715C41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D4ABE91CF8849200715C41 /* ViewController.swift in Sources */,
+				F4D4ABF91CF8854800715C41 /* PopoverController.swift in Sources */,
+				F4D4ABE71CF8849200715C41 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		F4D4ABEA1CF8849200715C41 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4D4ABEB1CF8849200715C41 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		F4D4ABEF1CF8849200715C41 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4D4ABF01CF8849200715C41 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F4D4ABF31CF8849200715C41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F4D4ABF41CF8849200715C41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F4D4ABF61CF8849200715C41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = CreatingUIPopovers/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.demoId.CreatingUIPopovers;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F4D4ABF71CF8849200715C41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = CreatingUIPopovers/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.demoId.CreatingUIPopovers;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F4D4ABDE1CF8849200715C41 /* Build configuration list for PBXProject "CreatingUIPopovers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4D4ABF31CF8849200715C41 /* Debug */,
+				F4D4ABF41CF8849200715C41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4D4ABF51CF8849200715C41 /* Build configuration list for PBXNativeTarget "CreatingUIPopovers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4D4ABF61CF8849200715C41 /* Debug */,
+				F4D4ABF71CF8849200715C41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F4D4ABDB1CF8849200715C41 /* Project object */;
+}

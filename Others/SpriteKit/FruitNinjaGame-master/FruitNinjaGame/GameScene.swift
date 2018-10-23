@@ -1,0 +1,599 @@
+//
+//  GameScene.swift
+//  FruitNinjaGame
+//
+//  Created by Steve Kerney on 8/28/17.
+//  Copyright © 2017 Steve Kerney. All rights reserved.
+//
+
+import SpriteKit
+import AVFoundation //audio
+import AVKit
+
+enum SequenceType: Int
+{
+    case oneNoBomb
+    case one
+    case twoWithOneBomb
+    case two
+    case three
+    case four
+    case chain
+    case fastChain
+} //bombs sequence
+
+enum ForceBomb
+{
+    case never
+    case always
+    case random
+}
+
+class GameScene: SKScene
+{
+    //Game
+    var bombSFX: AVAudioPlayer!;
+    
+    //Enemy Spawning
+    var spawnTime = 0.9
+    var sequence: [SequenceType]!;
+    var sequenceIndex = 0;
+    var chainDelay = 3.0;
+    var nextSequencedQueued = true;
+    
+    
+    //TouchPoints
+    var activeSlicePoints = [CGPoint]();
+    
+    //Slash Mechanic
+    var activeSliceBG: SKShapeNode!;
+    var activeSliceFG: SKShapeNode!;
+    let sliceLength = 4;
+    var isSwooshSFXPlaying = false;
+    
+    //Gameplay
+    var gameScore: SKLabelNode!;
+    var score: Int = 0
+    {
+        didSet
+        {
+            gameScore.text = "Score: \(score)"
+        }
+    }
+    var livesImages = [SKSpriteNode]();
+    var livesRemaining = 3;
+    var gameEnded = false;
+    
+    //Enemies
+    var activeEnemies = [SKSpriteNode]();
+    
+    
+    //Consts
+    let ENEMY_VELOCITY_SCALAR = 40;
+    
+    //MARK: Game Init
+    override func didMove(to view: SKView)
+    {
+        initScene(); //create slices here from this func
+        
+        sequence = [.oneNoBomb, .oneNoBomb, .twoWithOneBomb, .twoWithOneBomb, .three, .one, .chain];
+        
+        for _ in 0...1000
+        {
+            let nextSequence = SequenceType(rawValue: RandomInt(min: 2, max: 7))!;
+            sequence.append(nextSequence);
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [unowned self] in
+            self.tossEnemies();
+        }
+    }
+    
+    //MARK: Game Update
+    override func update(_ currentTime: TimeInterval)
+    {
+        if activeEnemies.count > 0
+        {
+            for enemy in activeEnemies
+            {
+                if enemy.position.y < -140
+                {
+                    enemy.removeAllActions();
+                    
+                    if enemy.name == "watermelon"
+                    {
+                        enemy.name = "";
+                        enemy.removeFromParent();
+                        subtractLife();
+                        
+                        if let index = activeEnemies.index(of: enemy)
+                        {
+                            activeEnemies.remove(at: index);
+                        }
+                    }
+                    else if enemy.name == "bombContainer"
+                    {
+                        enemy.name = "";
+                        enemy.removeFromParent();
+                        
+                        if let index = activeEnemies.index(of: enemy)
+                        {
+                            activeEnemies.remove(at: index);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if !nextSequencedQueued
+            {
+                DispatchQueue.main.asyncAfter(deadline: .now() + spawnTime, execute: { [unowned self] in
+                    
+                    self.tossEnemies();
+                })
+                nextSequencedQueued = true;
+            }
+        }
+        
+        var bombCount = 0;
+        for node in activeEnemies
+        {
+            if node.name == "bombContainer"
+            {
+                bombCount += 1;
+                break;
+            }
+        }
+        
+        if bombCount == 0
+        {
+            guard bombSFX != nil else { return; }
+            bombSFX.stop();
+            bombSFX = nil;
+        }
+    }
+}
+
+//MARK: Touch Input
+extension GameScene
+{
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
+    {
+        activeSlicePoints.removeAll(keepingCapacity: true); //remove initial/previous CGpoint?
+        
+        guard let vTouch = touches.first else { return; } //guard statements only run if the conditions are not met, helps to prevent errors?
+        let touchLocation = vTouch.location(in: self); //finds touch location
+        activeSlicePoints.append(touchLocation); //adds CGpoint where touch begins
+        
+        //Bezier Curve Construction
+        redrawActiveSlice();
+        
+        activeSliceBG.removeAllActions();
+        activeSliceFG.removeAllActions();
+        
+        activeSliceBG.alpha = 1.0;
+        activeSliceFG.alpha = 1.0;
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?)
+    {
+        guard !gameEnded else { return; }
+        
+        guard let vTouch = touches.first else { return; }
+        let touchLocation = vTouch.location(in: self);
+        activeSlicePoints.append(touchLocation);
+        
+        //Bezier Curve Construction
+        redrawActiveSlice();
+        
+        if !isSwooshSFXPlaying { playSwooshSFX(); }
+        
+        let nodesAtPoint = nodes(at: touchLocation);
+        
+        for node in nodesAtPoint
+        {
+            if node.name == "watermelon"
+            {
+                //Particles
+                let emitter = SKEmitterNode(fileNamed: "sliceHitEnemy")!
+                emitter.position = node.position;
+                addChild(emitter);
+                
+                //Prevent multiple swipes
+                node.name = "";
+                node.physicsBody!.isDynamic = false;
+                
+                //Death Animation
+                let scaleOutAction = SKAction.scale(by: 0.001, duration: 0.2);
+                let fadeOutAction = SKAction.fadeOut(withDuration: 0.2);
+                let actionGroup = [scaleOutAction, fadeOutAction];
+                let deathAction = SKAction.sequence(actionGroup);
+                node.run(deathAction);
+                
+                //Remove from Scene
+                let index = activeEnemies.index(of: node as! SKSpriteNode)!;
+                activeEnemies.remove(at: index);
+                
+                //Score
+                score += 1;
+                
+                //Death Sound
+                run(SKAction.playSoundFileNamed("whack.caf", waitForCompletion: false));
+            }
+            else if node.name == "bomb"
+            {
+                //Particles
+                let emitter = SKEmitterNode(fileNamed: "sliceHitBomb")!
+                emitter.position = node.parent!.position;
+                addChild(emitter);
+                
+                //Prevent multiple swipes
+                node.name = "";
+                node.parent!.physicsBody!.isDynamic = false;
+                
+                //Death Animation
+                let scaleOutAction = SKAction.scale(by: 0.001, duration: 0.2);
+                let fadeOutAction = SKAction.fadeOut(withDuration: 0.2);
+                let actionGroup = [scaleOutAction, fadeOutAction];
+                let deathAction = SKAction.sequence(actionGroup);
+                node.parent!.run(deathAction);
+                
+                //Remove from Scene
+                let index = activeEnemies.index(of: node.parent as! SKSpriteNode)!;
+                activeEnemies.remove(at: index);
+                
+                //Death Sound
+                run(SKAction.playSoundFileNamed("explosion.caf", waitForCompletion: false));
+                
+                //EndGame
+                endGame(triggeredByBomb: true);
+            }
+        }
+    
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>?, with event: UIEvent?)
+    {
+        activeSliceBG.run(SKAction.fadeOut(withDuration: 0.25));
+        activeSliceFG.run(SKAction.fadeOut(withDuration: 0.25));
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>?, with event: UIEvent?)
+    {
+        guard let vTouches = touches else { return; }
+        touchesEnded(vTouches, with: event);
+    }
+}
+
+//MARK: Helper Funcs
+extension GameScene
+{
+    fileprivate func initScene()
+    {
+        createBG();
+        setWorldProperties();
+        createScore();
+        createLives();
+        createSlices();
+    }
+    
+    fileprivate func createBG()
+    {
+        guard let vViewFrame = view?.frame else { return; }
+        
+        let background = SKSpriteNode(imageNamed: "sliceBackground");
+        background.position = CGPoint(x: vViewFrame.width / 2, y: vViewFrame.height / 2)
+        background.blendMode = .replace;
+        background.zPosition = -1;
+        addChild(background);
+    }
+    
+    fileprivate func setWorldProperties()
+    {
+        physicsWorld.gravity = CGVector(dx: 0, dy: -6);
+        physicsWorld.speed = 0.85;
+    }
+    
+    fileprivate func createScore()
+    {
+        gameScore = SKLabelNode(fontNamed: "Chalkduster");
+        gameScore.text = "Score: 0";
+        gameScore.horizontalAlignmentMode = .left;
+        gameScore.fontSize = 48;
+        gameScore.position = CGPoint(x: 8, y: 8);
+        addChild(gameScore);
+    }
+    
+    fileprivate func createLives()
+    {
+        for index in 0..<3
+        {
+            let lifeSprite = SKSpriteNode(imageNamed: "sliceLife");
+            lifeSprite.position = CGPoint(x: CGFloat(834 + (index * 70)), y: 720);
+            addChild(lifeSprite);
+            
+            livesImages.append(lifeSprite);
+        }
+    }
+    
+    fileprivate func createSlices()
+    {
+        activeSliceBG = SKShapeNode();
+        activeSliceBG.zPosition = 2;
+        activeSliceBG.strokeColor = UIColor(red: 0.5, green: 0.0, blue: 0.0, alpha: 0.8);
+        activeSliceBG.lineWidth = 9;
+        
+        activeSliceFG = SKShapeNode();
+        activeSliceFG.zPosition = 2;
+        activeSliceFG.strokeColor = UIColor.red;
+        activeSliceFG.lineWidth = 5;
+        
+        addChild(activeSliceBG);
+        addChild(activeSliceFG);
+    }
+    
+    //Create path based on slice points positions.
+    fileprivate func redrawActiveSlice()
+    {
+        //Not enough data - early out
+        guard activeSlicePoints.count > 2 else { self.activeSliceFG.path = nil; self.activeSliceBG.path = nil; return; } //if activeSlicePoints.count < 2 { self.activeSliceFG.path = nil; self.activeSliceBG.path = nil; return; }
+        
+        while activeSlicePoints.count > sliceLength //repeat code while etc occurs
+        {
+            //Pop oldest slice points, maintains the length of slice
+            activeSlicePoints.remove(at: 0);
+        }
+        
+        //Construct path
+        let path = UIBezierPath();
+        path.move(to: activeSlicePoints[0]);
+        
+        for index in 1..<activeSlicePoints.count
+        {
+            path.addLine(to: activeSlicePoints[index]);
+        }
+        
+        //Assign path
+        activeSliceBG.path = path.cgPath;
+        activeSliceFG.path = path.cgPath;
+    }
+    
+    func subtractLife()
+    {
+        livesRemaining -= 1;
+        run(SKAction.playSoundFileNamed("wrong.caf", waitForCompletion: false));
+        
+        var life: SKSpriteNode;
+        
+        switch livesRemaining
+        {
+        case 2:
+            life = livesImages[0];
+        case 1:
+            life = livesImages[1];
+        default:
+            life = livesImages[2];
+            endGame(triggeredByBomb: false);
+        }
+        
+        life.texture = SKTexture(imageNamed: "sliceLifeGone");
+        life.xScale = 1.3;
+        life.yScale = 1.3;
+        life.run(SKAction.scale(by: 1.0, duration: 0.1));
+    }
+}
+
+//MARK: Enemy Functions
+extension GameScene
+{
+    func createEnemy(_ forceBomb: ForceBomb = .random)
+    {
+        var enemyType = RandomInt(min: 0, max: 6);
+        
+        switch forceBomb
+        {
+        case .always:
+            enemyType = 0;
+        case .never:
+            enemyType = 1;
+        case .random:
+            break;
+        }
+        
+        enemyType == 0 ? createBomb() : createWatermelon()
+        
+    }
+    
+    func createBomb()
+    {
+        //Bomb Empty Collision Node
+        let enemy = SKSpriteNode();
+        enemy.zPosition = 1;
+        enemy.name = "bombContainer";
+        
+        
+        //Bomb Image Child
+        let bombImage = SKSpriteNode(imageNamed: "sliceBomb");
+        bombImage.name = "bomb";
+        enemy.addChild(bombImage);
+        
+        if bombSFX != nil
+        {
+            bombSFX.stop();
+            bombSFX = nil;
+        }
+        
+        //Bomb Fuse SFX
+        let path = Bundle.main.path(forResource: "sliceBombFuse.caf", ofType: nil)!;
+        let url = URL(fileURLWithPath: path);
+        let sound = try! AVAudioPlayer(contentsOf: url);
+        bombSFX = sound;
+        sound.play();
+        
+        //Bomb Emitter Child
+        let emitter = SKEmitterNode(fileNamed: "sliceFuse.sks")!;
+        emitter.position = CGPoint(x: 76, y: 64);
+        enemy.addChild(emitter);
+        
+        setEnemyOrientation(enemy: enemy);
+        
+        activeEnemies.append(enemy);
+        addChild(enemy);
+    }
+    
+    func createWatermelon()
+    {
+        let enemy = SKSpriteNode(imageNamed: "watermelon");
+        enemy.name = "watermelon";
+        run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false));
+        
+        setEnemyOrientation(enemy: enemy);
+        
+        activeEnemies.append(enemy);
+        addChild(enemy);
+    }
+    
+    func setEnemyOrientation(enemy: SKSpriteNode)
+    {
+        //Position
+        let randomPosition = CGPoint(x: RandomInt(min: 64, max: 960), y: -128);
+        enemy.position = randomPosition;
+        
+        //Angular Velocity
+        let randomAngularVelocity = CGFloat(RandomInt(min: -6, max: 6)) / 2.0
+        
+        //Linear Velocity
+        var randomXVelocity = 0;
+        if randomPosition.x < 256
+        {
+            randomXVelocity = RandomInt(min: 8, max: 15);
+        }
+        else if randomPosition.x < 512
+        {
+            randomXVelocity = RandomInt(min: 3, max: 5);
+        }
+        else if randomPosition.x < 756
+        {
+            randomXVelocity = -RandomInt(min: 3, max: 5);
+        }
+        else
+        {
+            randomXVelocity = -RandomInt(min: 8, max: 15);
+        }
+        let randomYVelocity = RandomInt(min: 24, max: 32)
+        
+        //Physics
+        enemy.physicsBody = SKPhysicsBody(circleOfRadius: 64);
+        enemy.physicsBody!.velocity = CGVector(dx: randomXVelocity * ENEMY_VELOCITY_SCALAR, dy: randomYVelocity * ENEMY_VELOCITY_SCALAR);
+        enemy.physicsBody!.angularVelocity = randomAngularVelocity;
+        enemy.physicsBody!.collisionBitMask = 0;
+    }
+}
+
+//MARK: Gameplay Functions
+extension GameScene
+{
+    func tossEnemies()
+    {
+        guard !gameEnded else { return; }
+        
+        spawnTime *= 0.991;
+        chainDelay *= 0.99
+        physicsWorld.speed *= 1.02;
+        
+        let sequenceType = sequence[sequenceIndex];
+        
+        switch sequenceType
+        {
+        case .oneNoBomb:
+            createEnemy(.never);
+        case .one:
+            createEnemy();
+        case .twoWithOneBomb:
+            createEnemy(.never);
+            createEnemy(.always);
+        case .two:
+            createEnemy();
+            createEnemy();
+        case .three:
+            createEnemy();
+            createEnemy();
+            createEnemy();
+        case .four:
+            createEnemy();
+            createEnemy();
+            createEnemy();
+            createEnemy();
+        case .chain:
+            createEnemy();
+            
+            for index in 1...4
+            {
+                DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 5.0 * Double(index)), execute: { [unowned self] in
+                    self.createEnemy();
+                })
+            }
+        case .fastChain:
+            createEnemy();
+            
+            for index in 1...4
+            {
+                DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 10.0 * Double(index)), execute: { [unowned self] in
+                    self.createEnemy();
+                })
+            }
+        }
+        
+        sequenceIndex += 1;
+        nextSequencedQueued = false;
+    }
+    
+    func endGame(triggeredByBomb: Bool)
+    {
+        guard !gameEnded else { return; }
+        
+        gameEnded = true;
+        physicsWorld.speed = 0;
+        isUserInteractionEnabled = false;
+        
+        if bombSFX != nil
+        {
+            bombSFX.stop();
+            bombSFX = nil;
+        }
+        
+        if triggeredByBomb
+        {
+            livesImages[0].texture = SKTexture(imageNamed: "sliceLifeGone");
+            livesImages[1].texture = SKTexture(imageNamed: "sliceLifeGone");
+            livesImages[2].texture = SKTexture(imageNamed: "sliceLifeGone");
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            if let scene = SKScene(fileNamed: "GameOverScene")
+            {
+                scene.scaleMode = .aspectFill
+                self.view?.presentScene(scene);
+            }
+        });
+    }
+}
+
+//MARK: SFX Functions
+extension GameScene
+{
+    fileprivate func playSwooshSFX()
+    {
+        isSwooshSFXPlaying = !isSwooshSFXPlaying;
+        
+        let randomIndex = RandomInt(min: 1, max: 3);
+        let soundName = "swoosh\(randomIndex).caf";
+        let playSwooshSFXAction = SKAction.playSoundFileNamed(soundName, waitForCompletion: true);
+        
+        run(playSwooshSFXAction) { [unowned self] in
+         
+            self.isSwooshSFXPlaying = false;
+        }
+    }
+}
